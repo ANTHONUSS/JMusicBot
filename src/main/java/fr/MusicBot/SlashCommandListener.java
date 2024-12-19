@@ -1,6 +1,9 @@
 package fr.MusicBot;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -150,75 +153,70 @@ public class SlashCommandListener extends ListenerAdapter {
     public void download(SlashCommandInteractionEvent event, String url) {
         File musicFolder = new File("Music");
         if (!musicFolder.exists()) {
-            System.out.println("Le dossier \"Music\" n'existe pas");
+            event.reply("Une erreur est survenue lors du téléchargement : Music directory does not exist.")
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
 
         event.deferReply(true).queue();
 
-        new Thread(() -> {
-            // Vérification si l'URL est une playlist
-            ProcessBuilder playlistCheckProcess = new ProcessBuilder("yt-dlp.exe", "--flat-playlist", url);
-            try {
-                System.out.println("Vérification de l'URL pour Playlist");
-                Process checkProcess = playlistCheckProcess.start();
-                int exitCode = checkProcess.waitFor();
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "yt-dlp.exe",
+                "-x",
+                "--audio-format", "mp3",
+                "--no-playlist",
+                "-o", "Music/%(title)s.%(ext)s",
+                url
+        );
 
-                if (exitCode == 0) {
-                    // L'URL est une playlist, refuser le téléchargement
-                    event.getHook().sendMessage("❌ L'URL fournie est une playlist. Téléchargement refusé.")
-                            .setEphemeral(true)
-                            .queue();
-                    return;
+        event.getHook().sendMessage("Téléchargement en cours...")
+                .setEphemeral(true)
+                .queue();
+        try {
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String line;
+
+            String musicName = "";
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println("yt-dlp: " + line);
+
+                if (line.contains("[ExtractAudio]") && line.contains("Destination")) {
+                    musicName = line.split("Destination: ")[1].trim();
+                    musicName = new File(musicName).getName();
+
+                    musicName = musicName.substring(0, musicName.lastIndexOf("."));
                 }
-            } catch (Exception e) {
-                // Erreur lors de la vérification de la playlist
-                event.getHook().sendMessage("❌ Erreur lors de la vérification de l'URL : " + e.getMessage())
+            }
+
+            while ((line = errorReader.readLine()) != null) {
+                System.err.println("yt-dlp: " + line);
+            }
+
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                event.getHook().sendMessage("La musique **"+musicName+"** à été téléchargée.")
+                        .queue();
+                return;
+            } else {
+                event.getHook().sendMessage("Une erreur est survenue lors du téléchargement")
                         .setEphemeral(true)
                         .queue();
                 return;
             }
-
-            // Construire la commande pour télécharger uniquement l'audio en MP3
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    "yt-dlp.exe",
-                    "-x",                             // Extraire l'audio uniquement
-                    "--audio-format", "mp3",          // Format MP3
-                    "--no-playlist",                  // Eviter de télécharger toute une playlist connectée à une vidéo
-                    "-o", "Music/%(title)s.%(ext)s",  // Sauvegarde dans le dossier Music
-                    url                               // URL de la vidéo
-            );
-
-            try {
-                event.getHook().sendMessage("⏳ Téléchargement en cours...")
+        } catch (Exception e) {
+            event.getHook().sendMessage("Une erreur est survenue lors du téléchargement : " + e.getMessage())
                         .setEphemeral(true)
                         .queue();
+                return;
+        }
 
-                System.out.println("Lancement du téléchargement...");
-                // Lancer le téléchargement avec yt-dlp
-                Process process = processBuilder.start();
 
-                // Attendre que le téléchargement se termine
-                int exitCode = process.waitFor();
-
-                if (exitCode == 0) {
-                    // Télécharger avec succès
-                    event.getHook().sendMessage("✅ Téléchargement terminé avec succès. Le fichier est sauvegardé dans le dossier **Music/**.")
-                            .setEphemeral(true)
-                            .queue();
-                } else {
-                    // Téléchargement échoué
-                    event.getHook().sendMessage("❌ Une erreur est survenue lors du téléchargement.")
-                            .setEphemeral(true)
-                            .queue();
-                }
-            } catch (Exception e) {
-                // Erreur lors de l'exécution de yt-dlp
-                event.getHook().sendMessage("❌ Une erreur est survenue pendant l'exécution de la commande : " + e.getMessage())
-                        .setEphemeral(true)
-                        .queue();
-            }
-        }).start();
     }
 
     public static List<String> listMusicFiles() {
