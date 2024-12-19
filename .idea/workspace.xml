@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44085ad3-70fd-46d4-9d2a-82540ef2f80f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/SlashCommandListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/SlashCommandListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +114,8 @@
       <workItem from="1734559549565" duration="11290000" />
       <workItem from="1734595562598" duration="83000" />
       <workItem from="1734595656684" duration="298000" />
-      <workItem from="1734597606506" duration="4527000" />
+      <workItem from="1734597606506" duration="5373000" />
+      <workItem from="1734603040569" duration="771000" />
     </task>
     <servers />
   </component>

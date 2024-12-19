@@ -20,6 +20,20 @@ dependencies {
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8' // Pour gérer l'encodage des fichiers source
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'fr.MusicBot.JMusicBot')
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Ignore les fichiers en double
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
