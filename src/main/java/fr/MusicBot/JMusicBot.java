@@ -45,7 +45,7 @@ public class JMusicBot extends ListenerAdapter {
                 Commands.slash("stop", "Arrête la musique et déconnecte le bot"),
                 Commands.slash("loop", "Active ou désactive la répétition de la musique en cours"),
                 Commands.slash("download", "Télécharge une musique depuis un URL Youtube")
-                        .addOption(STRING, "url", "URL de la vidéo Youtube (éviter les playlists)", true)
+                        .addOption(STRING, "url", "URL de la vidéo Youtube", true)
         );
 
         commands.queue();

@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44085ad3-70fd-46d4-9d2a-82540ef2f80f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/LOGs.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/MessageListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/MessageListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,7 +92,7 @@
       <command value="gradle build" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.JMusicBot [build]">
+  <component name="RunManager" selected="Application.JMusicBot">
     <configuration name="JMusicBot" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="fr.MusicBot.JMusicBot" />
       <module name="JMusicBot.main" />
@@ -162,7 +160,7 @@
       <workItem from="1734623195926" duration="72000" />
       <workItem from="1734718178122" duration="1244000" />
       <workItem from="1734719463591" duration="64000" />
-      <workItem from="1734721494306" duration="2736000" />
+      <workItem from="1734721494306" duration="4384000" />
     </task>
     <servers />
   </component>

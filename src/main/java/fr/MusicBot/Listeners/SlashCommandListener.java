@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -29,6 +31,7 @@ public class SlashCommandListener extends ListenerAdapter {
     private final AudioPlayerManager playerManager;
     private TrackScheduler currentTrackScheduler;
     private boolean isLooping = false;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public SlashCommandListener() {
         this.playerManager = new DefaultAudioPlayerManager();
@@ -155,7 +158,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
         LOGs.sendLog(isLooping
                 ? "Loop activé."
-                : "Loop désactivé.",4);
+                : "Loop désactivé.", 4);
     }
 
     public void download(SlashCommandInteractionEvent event, String url) {
@@ -169,60 +172,78 @@ public class SlashCommandListener extends ListenerAdapter {
 
         event.deferReply(true).queue();
 
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "yt-dlp.exe",
-                "-x",
-                "--audio-format", "mp3",
-                "--no-playlist",
-                "-o", "Music/%(title)s.%(ext)s",
-                url
-        );
+        executorService.submit(() -> {
 
-        event.getHook().sendMessage("Téléchargement en cours...")
-                .setEphemeral(true)
-                .queue();
-        LOGs.sendLog("Musique en cours de téléchargement", 1);
-        try {
-            Process process = processBuilder.start();
+            String musicName = null;
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line;
+            try {
+                ProcessBuilder titleProcessBuilder = new ProcessBuilder(
+                        "yt-dlp.exe",
+                        "--get-title",
+                        url
+                );
+                Process titleProcess = titleProcessBuilder.start();
 
-            String musicName = "";
+                BufferedReader titleReader = new BufferedReader(new InputStreamReader(titleProcess.getInputStream()));
+                musicName = titleReader.readLine();
+                titleProcess.waitFor();
 
-            while ((line = reader.readLine()) != null) {
-                System.out.println("yt-dlp: " + line);
+                if (musicName == null || musicName.isEmpty())
+                    musicName = "Titre inconnu";
+            }catch (Exception e) {
+                event.getHook().sendMessage("Impossible de récupérer le nom de la musique.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
 
-                if (line.contains("[ExtractAudio]") && line.contains("Destination")) {
-                    musicName = line.split("Destination: ")[1].trim();
-                    musicName = new File(musicName).getName();
+            event.getHook().sendMessage("Téléchargement de **" + musicName + "** en cours...")
+                    .setEphemeral(true)
+                    .queue();
+            LOGs.sendLog("Musique en cours de téléchargement", 1);
 
-                    musicName = musicName.substring(0, musicName.lastIndexOf("."));
+
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "yt-dlp.exe",
+                    "-x",
+                    "--audio-format", "mp3",
+                    "--no-playlist",
+                    "-o", "Music/%(title)s.%(ext)s",
+                    url
+            );
+
+            try {
+                Process process = processBuilder.start();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    LOGs.sendLog(line, 1);
                 }
+
+                while ((line = errorReader.readLine()) != null) {
+                    System.err.println("yt-dlp: " + line);
+                }
+
+                int exitCode = process.waitFor();
+
+                if (exitCode == 0) {
+                    event.getHook().deleteOriginal().queue();
+                    event.getChannel().sendMessage("La musique **" + musicName + "** à été téléchargée.")
+                            .queue();
+                    LOGs.sendLog("Musique téléchargée : " + musicName, 1);
+                } else {
+                    event.getHook().editOriginal("Une erreur est survenue lors du téléchargement")
+                            .queue();
+                }
+            } catch (Exception e) {
+                event.getHook().editOriginal("Une erreur est survenue lors du téléchargement : " + e.getMessage())
+                        .queue();
             }
 
-            while ((line = errorReader.readLine()) != null) {
-                System.err.println("yt-dlp: " + line);
-            }
-
-            int exitCode = process.waitFor();
-
-            if (exitCode == 0) {
-                event.getHook().sendMessage("La musique **"+musicName+"** à été téléchargée.")
-                        .queue();
-                LOGs.sendLog("Musique téléchargée : "+musicName, 1);
-            } else {
-                event.getHook().sendMessage("Une erreur est survenue lors du téléchargement")
-                        .setEphemeral(true)
-                        .queue();
-            }
-        } catch (Exception e) {
-            event.getHook().sendMessage("Une erreur est survenue lors du téléchargement : " + e.getMessage())
-                        .setEphemeral(true)
-                        .queue();
-        }
-
+        });
 
     }
 
