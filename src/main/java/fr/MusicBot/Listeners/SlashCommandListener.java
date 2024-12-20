@@ -77,6 +77,7 @@ public class SlashCommandListener extends ListenerAdapter {
             return;
         }
 
+        selectedMusic += ".mp3";
         File musicFile = new File("Music/" + selectedMusic);
         if (!musicFile.exists()) {
             event.reply("Le fichier sélectionné n'existe pas : " + selectedMusic).queue();
@@ -91,17 +92,20 @@ public class SlashCommandListener extends ListenerAdapter {
         currentTrackScheduler = new TrackScheduler(audioPlayer, audioManager);
 
         currentTrackScheduler.setLooping(loopEnabled);
+        currentTrackScheduler.setCurrentTrackName(selectedMusic);
         isLooping = loopEnabled;
 
         audioPlayer.addListener(currentTrackScheduler);
 
+        String musicName = musicFile.getName().replace(".mp3", "");
+
         playerManager.loadItem(musicFile.getAbsolutePath(), new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
-                event.reply("Lecture de **" + musicFile.getName() + "**"
+                event.reply("Lecture de **" + musicName + "**"
                         + (loopEnabled ? " (en boucle)" : "")).queue();
                 audioPlayer.playTrack(audioTrack);
-                LOGs.sendLog("Musique " + musicFile.getName() + " lue." + (loopEnabled ? " (en boucle)" : ""), 2);
+                LOGs.sendLog("Musique " + musicName + " lue." + (loopEnabled ? " (en boucle)" : ""), 2);
             }
 
             @Override
@@ -149,6 +153,10 @@ public class SlashCommandListener extends ListenerAdapter {
             return;
         }
 
+
+        if (currentTrackScheduler.getCurrentTrackName() == null || currentTrackScheduler.getCurrentTrackName().isEmpty()) {
+            currentTrackScheduler.setCurrentTrackName(currentTrackScheduler.audioPlayer.getPlayingTrack().getInfo().title);
+        }
         isLooping = !isLooping;
         currentTrackScheduler.setLooping(isLooping);
 
@@ -190,7 +198,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
                 if (musicName == null || musicName.isEmpty())
                     musicName = "Titre inconnu";
-            }catch (Exception e) {
+            } catch (Exception e) {
                 event.getHook().sendMessage("Impossible de récupérer le nom de la musique.")
                         .setEphemeral(true)
                         .queue();
@@ -258,6 +266,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 .filter(file -> !file.isDirectory()) // Exclure les dossiers
                 .map(File::getName) // Filtrer uniquement les fichiers '.mp3'
                 .filter(name -> name.endsWith(".mp3")) // Extraire les noms de fichiers
+                .map(name -> name.replace(".mp3", ""))
                 .toList();
     }
 }
