@@ -1,4 +1,4 @@
-package fr.MusicBot;
+package fr.MusicBot.Listeners;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

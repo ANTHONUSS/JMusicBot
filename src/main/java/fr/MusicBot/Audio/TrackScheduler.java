@@ -1,4 +1,4 @@
-package fr.MusicBot;
+package fr.MusicBot.Audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;

@@ -1,11 +1,15 @@
 package fr.MusicBot;
 
+import fr.MusicBot.Listeners.MessageListener;
+import fr.MusicBot.Listeners.SlashCommandAutoComplete;
+import fr.MusicBot.Listeners.SlashCommandListener;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.security.auth.login.LoginException;
@@ -25,8 +29,11 @@ public class JMusicBot extends ListenerAdapter {
 
 
         JDA jda = JDABuilder.createDefault(token)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                .enableIntents(GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new SlashCommandListener())
                 .addEventListeners(new SlashCommandAutoComplete())
+                .addEventListeners(new MessageListener())
                 .build();
 
         CommandListUpdateAction commands = jda.updateCommands();
