@@ -12,9 +12,11 @@ public class SlashCommandAutoComplete extends ListenerAdapter {
         String focusedOption = event.getFocusedOption().getName();
 
         if (focusedOption.equals("musique")) {
+            String userInput = event.getFocusedOption().getValue();
             List<String> musicFiles = SlashCommandListener.listMusicFiles();
 
             List<Command.Choice> choices = musicFiles.stream()
+                    .filter(name -> name.toLowerCase().contains(userInput.toLowerCase()))
                     .map(name -> new Command.Choice(name, name))
                     .limit(25)
                     .toList();

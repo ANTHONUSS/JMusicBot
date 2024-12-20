@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44085ad3-70fd-46d4-9d2a-82540ef2f80f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/MessageListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/LOGs.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/AudioPlayerSendHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Audio/AudioPlayerSendHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/SlashCommandAutoComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/SlashCommandListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/TrackScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Audio/TrackScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/MessageListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/MessageListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,34 +63,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.JMusicBot [:fr.MusicBot.JMusicBot.main()].executor": "Run",
-    "Gradle.JMusicBot [:fr.MusicBot.Main.main()].executor": "Run",
-    "Gradle.JMusicBot [run].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "CodeWithMe",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.JMusicBot [:fr.MusicBot.JMusicBot.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.JMusicBot [:fr.MusicBot.Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.JMusicBot [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.JMusicBot [compile clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.JMusicBot [run].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CodeWithMe&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="gradle run" />
+      <command value="gradle compile clean" />
+      <command value="gradle build" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.JMusicBot">
+  <component name="RunManager" selected="Gradle.JMusicBot [build]">
     <configuration name="JMusicBot" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="fr.MusicBot.JMusicBot" />
       <module name="JMusicBot.main" />
@@ -106,7 +108,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="JMusicBot [run]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="JMusicBot [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -117,7 +119,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="run" />
+            <option value="build" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -130,7 +132,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.JMusicBot [run]" />
+        <item itemvalue="Gradle.JMusicBot [build]" />
         <item itemvalue="Application.JMusicBot" />
       </list>
     </recent_temporary>
@@ -158,7 +160,9 @@
       <workItem from="1734603040569" duration="1142000" />
       <workItem from="1734615060224" duration="76000" />
       <workItem from="1734623195926" duration="72000" />
-      <workItem from="1734718178122" duration="1190000" />
+      <workItem from="1734718178122" duration="1244000" />
+      <workItem from="1734719463591" duration="64000" />
+      <workItem from="1734721494306" duration="2736000" />
     </task>
     <servers />
   </component>

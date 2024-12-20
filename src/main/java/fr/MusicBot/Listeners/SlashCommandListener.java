@@ -18,6 +18,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fr.MusicBot.Audio.AudioPlayerSendHandler;
 import fr.MusicBot.Audio.TrackScheduler;
+import fr.MusicBot.LOGs;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -97,6 +98,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 event.reply("Lecture de **" + musicFile.getName() + "**"
                         + (loopEnabled ? " (en boucle)" : "")).queue();
                 audioPlayer.playTrack(audioTrack);
+                LOGs.sendLog("Musique " + musicFile.getName() + " lue." + (loopEnabled ? " (en boucle)" : ""), 2);
             }
 
             @Override
@@ -125,6 +127,7 @@ public class SlashCommandListener extends ListenerAdapter {
         if (audioManager.isConnected()) {
             audioManager.closeAudioConnection();
             event.reply("Musique arrêtée.").queue();
+            LOGs.sendLog("Musique arrêtée.", 3);
         } else {
             event.reply("Aucune musique en cours.").queue();
         }
@@ -139,7 +142,7 @@ public class SlashCommandListener extends ListenerAdapter {
         }
 
         if (currentTrackScheduler == null) {
-            event.reply("impossible de récupérer le festionnaire de piste, Utilisez `/play`").queue();
+            event.reply("impossible de récupérer le gestionnaire de piste, Utilisez `/play`").queue();
             return;
         }
 
@@ -149,6 +152,10 @@ public class SlashCommandListener extends ListenerAdapter {
         event.reply(isLooping
                 ? "Loop activé."
                 : "Loop désactivé.").queue();
+
+        LOGs.sendLog(isLooping
+                ? "Loop activé."
+                : "Loop désactivé.",4);
     }
 
     public void download(SlashCommandInteractionEvent event, String url) {
@@ -174,6 +181,7 @@ public class SlashCommandListener extends ListenerAdapter {
         event.getHook().sendMessage("Téléchargement en cours...")
                 .setEphemeral(true)
                 .queue();
+        LOGs.sendLog("Musique en cours de téléchargement", 1);
         try {
             Process process = processBuilder.start();
 
@@ -203,18 +211,16 @@ public class SlashCommandListener extends ListenerAdapter {
             if (exitCode == 0) {
                 event.getHook().sendMessage("La musique **"+musicName+"** à été téléchargée.")
                         .queue();
-                return;
+                LOGs.sendLog("Musique téléchargée : "+musicName, 1);
             } else {
                 event.getHook().sendMessage("Une erreur est survenue lors du téléchargement")
                         .setEphemeral(true)
                         .queue();
-                return;
             }
         } catch (Exception e) {
             event.getHook().sendMessage("Une erreur est survenue lors du téléchargement : " + e.getMessage())
                         .setEphemeral(true)
                         .queue();
-                return;
         }
 
 
@@ -229,8 +235,8 @@ public class SlashCommandListener extends ListenerAdapter {
 
         return Arrays.stream(musicFolder.listFiles())
                 .filter(file -> !file.isDirectory()) // Exclure les dossiers
-                .filter(file -> file.getName().endsWith(".mp3")) // Filtrer uniquement les fichiers '.mp3'
-                .map(File::getName) // Extraire les noms de fichiers
+                .map(File::getName) // Filtrer uniquement les fichiers '.mp3'
+                .filter(name -> name.endsWith(".mp3")) // Extraire les noms de fichiers
                 .toList();
     }
 }
