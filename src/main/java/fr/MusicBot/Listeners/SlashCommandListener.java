@@ -105,7 +105,11 @@ public class SlashCommandListener extends ListenerAdapter {
                 event.reply("Lecture de **" + musicName + "**"
                         + (loopEnabled ? " (en boucle)" : "")).queue();
                 audioPlayer.playTrack(audioTrack);
-                LOGs.sendLog("Musique " + musicName + " lue." + (loopEnabled ? " (en boucle)" : ""), 2);
+                LOGs.sendLog("Musique jouée :"
+                        + "\tNom : " + musicName
+                        + "\n\t\t\t\t\t\t\tServeur : " + event.getGuild().getName()
+                        + "\n\t\t\t\t\t\t\tSalon : #" + event.getChannel().getName()
+                        + "\n\t\t\t\t\t\t\tEn boucle : " + isLooping, 2);
             }
 
             @Override
@@ -134,7 +138,10 @@ public class SlashCommandListener extends ListenerAdapter {
         if (audioManager.isConnected()) {
             audioManager.closeAudioConnection();
             event.reply("Musique arrêtée.").queue();
-            LOGs.sendLog("Musique arrêtée.", 3);
+            LOGs.sendLog("Musique arrêtée :"
+                        + "\tServeur : " + event.getGuild().getName()
+                        + "\n\t\t\t\t\t\t\tSalon : #" + event.getChannel().getName(),
+                        3);
         } else {
             event.reply("Aucune musique en cours.").queue();
         }
@@ -164,9 +171,11 @@ public class SlashCommandListener extends ListenerAdapter {
                 ? "Loop activé."
                 : "Loop désactivé.").queue();
 
-        LOGs.sendLog(isLooping
-                ? "Loop activé."
-                : "Loop désactivé.", 4);
+        LOGs.sendLog("\tLoop : " + isLooping
+                + "\n\t\t\tNom : " + currentTrackScheduler.getCurrentTrackName()
+                + "\n\t\t\tServeur : " + event.getGuild().getName()
+                + "\n\t\t\tSalon : #" + event.getChannel().getName(),
+                4);
     }
 
     public void download(SlashCommandInteractionEvent event, String url) {
@@ -208,7 +217,7 @@ public class SlashCommandListener extends ListenerAdapter {
             event.getHook().sendMessage("Téléchargement de **" + musicName + "** en cours...")
                     .setEphemeral(true)
                     .queue();
-            LOGs.sendLog("Musique en cours de téléchargement", 1);
+            LOGs.sendLog("Musique " + musicName + " en cours de téléchargement", 1);
 
 
             ProcessBuilder processBuilder = new ProcessBuilder(

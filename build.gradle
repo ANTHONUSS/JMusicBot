@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'fr.JMusicBot'
-version = '1.4'
+version = '1.5'
 
 repositories {
     mavenCentral()
@@ -21,14 +21,14 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8' // Pour gérer l'encodage des fichiers source
+    options.encoding = 'UTF-8'
 }
 
 jar {
     manifest {
         attributes('Main-Class': 'fr.MusicBot.JMusicBot')
     }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Ignore les fichiers en double
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
