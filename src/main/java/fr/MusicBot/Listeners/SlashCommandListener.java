@@ -93,6 +93,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
         currentTrackScheduler.setLooping(loopEnabled);
         currentTrackScheduler.setCurrentTrackName(selectedMusic);
+        currentTrackScheduler.setCurrentEvent(event);
         isLooping = loopEnabled;
 
         audioPlayer.addListener(currentTrackScheduler);
@@ -105,11 +106,11 @@ public class SlashCommandListener extends ListenerAdapter {
                 event.reply("Lecture de **" + musicName + "**"
                         + (loopEnabled ? " (en boucle)" : "")).queue();
                 audioPlayer.playTrack(audioTrack);
-                LOGs.sendLog("Musique jouée :"
-                        + "\tNom : " + musicName
-                        + "\n\t\t\t\t\t\t\tServeur : " + event.getGuild().getName()
-                        + "\n\t\t\t\t\t\t\tSalon : #" + event.getChannel().getName()
-                        + "\n\t\t\t\t\t\t\tEn boucle : " + isLooping, 2);
+                LOGs.sendLog("Musique jouée"
+                        + "\nNom : " + musicName
+                        + "\nServeur : " + event.getGuild().getName()
+                        + "\nSalon : #" + event.getChannel().getName()
+                        + "\nEn boucle : " + isLooping, 2);
             }
 
             @Override
@@ -138,9 +139,9 @@ public class SlashCommandListener extends ListenerAdapter {
         if (audioManager.isConnected()) {
             audioManager.closeAudioConnection();
             event.reply("Musique arrêtée.").queue();
-            LOGs.sendLog("Musique arrêtée :"
-                        + "\tServeur : " + event.getGuild().getName()
-                        + "\n\t\t\t\t\t\t\tSalon : #" + event.getChannel().getName(),
+            LOGs.sendLog("Musique arrêtée"
+                        + "\nServeur : " + event.getGuild().getName()
+                        + "\nSalon : #" + event.getChannel().getName(),
                         3);
         } else {
             event.reply("Aucune musique en cours.").queue();
@@ -166,15 +167,16 @@ public class SlashCommandListener extends ListenerAdapter {
         }
         isLooping = !isLooping;
         currentTrackScheduler.setLooping(isLooping);
+        currentTrackScheduler.setCurrentEvent(event);
 
         event.reply(isLooping
                 ? "Loop activé."
                 : "Loop désactivé.").queue();
 
-        LOGs.sendLog("\tLoop : " + isLooping
-                + "\n\t\t\tNom : " + currentTrackScheduler.getCurrentTrackName()
-                + "\n\t\t\tServeur : " + event.getGuild().getName()
-                + "\n\t\t\tSalon : #" + event.getChannel().getName(),
+        LOGs.sendLog((isLooping ? "Loop activé" : "Loop désactivé")
+                + "\nNom : " + currentTrackScheduler.getCurrentTrackName()
+                + "\nServeur : " + event.getGuild().getName()
+                + "\nSalon : #" + event.getChannel().getName(),
                 4);
     }
 

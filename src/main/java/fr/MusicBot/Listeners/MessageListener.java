@@ -14,10 +14,10 @@ public class MessageListener extends ListenerAdapter {
 
         if (message.toLowerCase().matches(".*\\bquoi\\s?\\p{Punct}*$")) {
             event.getMessage().reply("feur").queue();
-            LOGs.sendLog("feur envoyé : "
-                    + "\tUser : " + event.getAuthor().getName()
-                    + "\n\t\t\t\t\t\tServeur : " + event.getGuild().getName()
-                    + "\n\t\t\t\t\t\tSalon : #" + event.getChannel().getName(),
+            LOGs.sendLog("feur envoyé"
+                    + "\nUser : " + event.getAuthor().getName()
+                    + "\nServeur : " + event.getGuild().getName()
+                    + "\nSalon : #" + event.getChannel().getName(),
                     5);
         }
     }
