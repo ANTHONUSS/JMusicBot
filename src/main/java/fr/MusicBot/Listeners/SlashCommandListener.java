@@ -110,6 +110,7 @@ public class SlashCommandListener extends ListenerAdapter {
                         + "\nNom : " + musicName
                         + "\nServeur : " + event.getGuild().getName()
                         + "\nSalon : #" + event.getChannel().getName()
+                        + "\nUser : @" + event.getUser().getName()
                         + "\nEn boucle : " + isLooping, 2);
             }
 
@@ -141,7 +142,8 @@ public class SlashCommandListener extends ListenerAdapter {
             event.reply("Musique arrêtée.").queue();
             LOGs.sendLog("Musique arrêtée"
                         + "\nServeur : " + event.getGuild().getName()
-                        + "\nSalon : #" + event.getChannel().getName(),
+                        + "\nSalon : #" + event.getChannel().getName()
+                        + "\nUser : " + event.getUser().getName(),
                         3);
         } else {
             event.reply("Aucune musique en cours.").queue();
@@ -176,7 +178,8 @@ public class SlashCommandListener extends ListenerAdapter {
         LOGs.sendLog((isLooping ? "Loop activé" : "Loop désactivé")
                 + "\nNom : " + currentTrackScheduler.getCurrentTrackName()
                 + "\nServeur : " + event.getGuild().getName()
-                + "\nSalon : #" + event.getChannel().getName(),
+                + "\nSalon : #" + event.getChannel().getName()
+                + "\nUser : @" + event.getUser().getName(),
                 4);
     }
 
@@ -219,7 +222,7 @@ public class SlashCommandListener extends ListenerAdapter {
             event.getHook().sendMessage("Téléchargement de **" + musicName + "** en cours...")
                     .setEphemeral(true)
                     .queue();
-            LOGs.sendLog("Musique " + musicName + " en cours de téléchargement", 1);
+            LOGs.sendLog("Musique " + musicName + " en cours de téléchargement par @" + event.getUser().getName(), 1);
 
 
             ProcessBuilder processBuilder = new ProcessBuilder(
@@ -252,7 +255,9 @@ public class SlashCommandListener extends ListenerAdapter {
                     event.getHook().deleteOriginal().queue();
                     event.getChannel().sendMessage("La musique **" + musicName + "** à été téléchargée.")
                             .queue();
-                    LOGs.sendLog("Musique téléchargée : " + musicName, 1);
+                    LOGs.sendLog("Musique téléchargée"
+                            + "\nNom : " + musicName
+                            + "\nUser : " + event.getUser().getName(), 1);
                 } else {
                     event.getHook().editOriginal("Une erreur est survenue lors du téléchargement")
                             .queue();
