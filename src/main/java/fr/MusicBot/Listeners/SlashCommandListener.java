@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class SlashCommandListener extends ListenerAdapter {
@@ -58,8 +59,8 @@ public class SlashCommandListener extends ListenerAdapter {
 
                 download(event, choosedURL);
             }
-            default -> {
-                return;
+            case "list" -> {
+                list(event);
             }
         }
     }
@@ -72,10 +73,6 @@ public class SlashCommandListener extends ListenerAdapter {
         VoiceChannel channel = (VoiceChannel) event.getMember().getVoiceState().getChannel();
 
         Guild guild = event.getGuild();
-        if (guild == null) {
-            event.reply("Cette commande doit être exécutée dans un serveur.").queue();
-            return;
-        }
 
         selectedMusic += ".mp3";
         File musicFile = new File("Music/" + selectedMusic);
@@ -141,10 +138,10 @@ public class SlashCommandListener extends ListenerAdapter {
             audioManager.closeAudioConnection();
             event.reply("Musique arrêtée.").queue();
             LOGs.sendLog("Musique arrêtée"
-                        + "\nServeur : " + event.getGuild().getName()
-                        + "\nSalon : #" + event.getChannel().getName()
-                        + "\nUser : " + event.getUser().getName(),
-                        3);
+                            + "\nServeur : " + event.getGuild().getName()
+                            + "\nSalon : #" + event.getChannel().getName()
+                            + "\nUser : " + event.getUser().getName(),
+                    3);
         } else {
             event.reply("Aucune musique en cours.").queue();
         }
@@ -176,10 +173,10 @@ public class SlashCommandListener extends ListenerAdapter {
                 : "Loop désactivé.").queue();
 
         LOGs.sendLog((isLooping ? "Loop activé" : "Loop désactivé")
-                + "\nNom : " + currentTrackScheduler.getCurrentTrackName()
-                + "\nServeur : " + event.getGuild().getName()
-                + "\nSalon : #" + event.getChannel().getName()
-                + "\nUser : @" + event.getUser().getName(),
+                        + "\nNom : " + currentTrackScheduler.getCurrentTrackName()
+                        + "\nServeur : " + event.getGuild().getName()
+                        + "\nSalon : #" + event.getChannel().getName()
+                        + "\nUser : @" + event.getUser().getName(),
                 4);
     }
 
@@ -284,5 +281,38 @@ public class SlashCommandListener extends ListenerAdapter {
                 .filter(name -> name.endsWith(".mp3")) // Extraire les noms de fichiers
                 .map(name -> name.replace(".mp3", ""))
                 .toList();
+    }
+
+    public static void list(SlashCommandInteractionEvent event){
+        ButtonInteractionListener.currentEvent = event;
+
+        event.reply(makeList(1))
+                .addActionRow(
+                        Button.primary("previous_page_1", "⬅️ Page précédente").asDisabled(),
+                        Button.primary("next_page_1", "➡️ Page suivante")
+                )
+                .setEphemeral(true)
+                .queue();
+    }
+
+    public static String makeList(int currentPage) {
+        List<String> musicList = listMusicFiles();
+        int totalPages = (int) Math.ceil((double) musicList.size() / 10);
+
+        if (currentPage < 1) currentPage=1;
+        if (currentPage > totalPages) currentPage=totalPages;
+
+        List<String> pageContent = musicList.stream()
+                .skip((currentPage - 1) * 10L)
+                .limit(10)
+                .toList();
+
+        StringBuilder musicsBuilder = new StringBuilder();
+        musicsBuilder.append("**Liste des musiques disponibles (" + currentPage + "/" + totalPages + ") : **\n\n");
+        for (String music : pageContent) {
+            musicsBuilder.append("- ").append(music).append("\n");
+        }
+
+        return musicsBuilder.toString();
     }
 }

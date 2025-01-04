@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.List;
 
-public class SlashCommandAutoComplete extends ListenerAdapter {
+public class SlashCommandAutoCompleteListener extends ListenerAdapter {
     @Override
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
         String focusedOption = event.getFocusedOption().getName();

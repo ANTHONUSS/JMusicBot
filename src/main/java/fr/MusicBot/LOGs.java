@@ -8,6 +8,7 @@ public class LOGs {
     public static final String PURPLE = "\u001B[35m";   //music stops
     public static final String CYAN = "\u001B[36m";     //loop
     public static final String BLUE = "\u001B[34m";     //"feur" reply
+    public static final String PINK = "\033[38;5;213m"; //debug reply
 
     public static void sendLog(String message, int logType) {
         String color;
@@ -36,6 +37,10 @@ public class LOGs {
             case 5 -> {
                 color = BLUE;
                 enterMessage = "FEUR ==> ";
+            }
+            case 6 -> {
+                color = PINK;
+                enterMessage = "DEBUG ==> ";
             }
             default -> {
                 System.out.println(RED + "Mauvais logType entré : " + logType + DEFAULT);

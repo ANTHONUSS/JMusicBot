@@ -1,7 +1,8 @@
 package fr.MusicBot;
 
+import fr.MusicBot.Listeners.ButtonInteractionListener;
 import fr.MusicBot.Listeners.MessageListener;
-import fr.MusicBot.Listeners.SlashCommandAutoComplete;
+import fr.MusicBot.Listeners.SlashCommandAutoCompleteListener;
 import fr.MusicBot.Listeners.SlashCommandListener;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
@@ -14,8 +15,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.security.auth.login.LoginException;
 
-import static net.dv8tion.jda.api.interactions.commands.OptionType.BOOLEAN;
-import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
+import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class JMusicBot extends ListenerAdapter {
     public static void main(String[] args) throws IllegalArgumentException, LoginException, RateLimitedException {
@@ -32,12 +32,12 @@ public class JMusicBot extends ListenerAdapter {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)
                 .addEventListeners(new SlashCommandListener())
-                .addEventListeners(new SlashCommandAutoComplete())
+                .addEventListeners(new SlashCommandAutoCompleteListener())
                 .addEventListeners(new MessageListener())
+                .addEventListeners(new ButtonInteractionListener())
                 .build();
 
         CommandListUpdateAction commands = jda.updateCommands();
-
         commands.addCommands(
                 Commands.slash("play", "Joue une musique depuis la library")
                         .addOption(STRING, "musique", "Nom de la musique à jouer", true, true)
@@ -45,9 +45,9 @@ public class JMusicBot extends ListenerAdapter {
                 Commands.slash("stop", "Arrête la musique et déconnecte le bot"),
                 Commands.slash("loop", "Active ou désactive la répétition de la musique en cours"),
                 Commands.slash("download", "Télécharge une musique depuis un URL Youtube")
-                        .addOption(STRING, "url", "URL de la vidéo Youtube", true)
+                        .addOption(STRING, "url", "URL de la vidéo Youtube", true),
+                Commands.slash("list", "Liste toutes les musiques disponibles")
         );
-
         commands.queue();
     }
 }
