@@ -3,6 +3,7 @@ package fr.MusicBot.Listeners;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,9 @@ public class SlashCommandListener extends ListenerAdapter {
     private final AudioPlayerManager playerManager;
     private TrackScheduler currentTrackScheduler;
     private boolean isLooping = false;
+    public static boolean isPlaying = false;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
+    public static final List<AudioTrack> currentTrackList = new ArrayList<>();
 
     public SlashCommandListener() {
         this.playerManager = new DefaultAudioPlayerManager();
@@ -62,10 +65,15 @@ public class SlashCommandListener extends ListenerAdapter {
             case "list" -> {
                 list(event);
             }
+            case "queue" -> {
+                String selectedMusic = event.getOption("musique", interactionOption -> interactionOption.getAsString());
+
+                queue(event, selectedMusic);
+            }
         }
     }
 
-    public void play(SlashCommandInteractionEvent event, String selectedMusic, boolean loopEnabled) {
+    private void play(SlashCommandInteractionEvent event, String selectedMusic, boolean loopEnabled) {
         if (event.getMember().getVoiceState().getChannel() == null) {
             event.reply("Vous n'êtes connecté à aucun salon vocal.").queue();
             return;
@@ -102,7 +110,12 @@ public class SlashCommandListener extends ListenerAdapter {
             public void trackLoaded(AudioTrack audioTrack) {
                 event.reply("Lecture de **" + musicName + "**"
                         + (loopEnabled ? " (en boucle)" : "")).queue();
+
+                currentTrackList.clear();
+                currentTrackScheduler.setCurrentTrackIndex(0);
+                currentTrackList.add(audioTrack);
                 audioPlayer.playTrack(audioTrack);
+                isPlaying=true;
                 LOGs.sendLog("Musique jouée"
                         + "\nNom : " + musicName
                         + "\nServeur : " + event.getGuild().getName()
@@ -131,11 +144,12 @@ public class SlashCommandListener extends ListenerAdapter {
         audioManager.openAudioConnection(channel);
     }
 
-    public void stop(SlashCommandInteractionEvent event) {
+    private void stop(SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();
         AudioManager audioManager = guild.getAudioManager();
         if (audioManager.isConnected()) {
             audioManager.closeAudioConnection();
+            isPlaying = false;
             event.reply("Musique arrêtée.").queue();
             LOGs.sendLog("Musique arrêtée"
                             + "\nServeur : " + event.getGuild().getName()
@@ -147,7 +161,7 @@ public class SlashCommandListener extends ListenerAdapter {
         }
     }
 
-    public void toggleLoop(SlashCommandInteractionEvent event) {
+    private void toggleLoop(SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();
         AudioManager audioManager = guild.getAudioManager();
         if (!audioManager.isConnected()) {
@@ -159,7 +173,6 @@ public class SlashCommandListener extends ListenerAdapter {
             event.reply("impossible de récupérer le gestionnaire de piste, Utilisez `/play`").queue();
             return;
         }
-
 
         if (currentTrackScheduler.getCurrentTrackName() == null || currentTrackScheduler.getCurrentTrackName().isEmpty()) {
             currentTrackScheduler.setCurrentTrackName(currentTrackScheduler.audioPlayer.getPlayingTrack().getInfo().title);
@@ -180,7 +193,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 4);
     }
 
-    public void download(SlashCommandInteractionEvent event, String url) {
+    private void download(SlashCommandInteractionEvent event, String url) {
         File musicFolder = new File("Music");
         if (!musicFolder.exists()) {
             event.reply("Une erreur est survenue lors du téléchargement : Music directory does not exist.")
@@ -268,6 +281,56 @@ public class SlashCommandListener extends ListenerAdapter {
 
     }
 
+    private static void list(SlashCommandInteractionEvent event){
+        ButtonInteractionListener.currentEvent = event;
+
+        event.reply(makeList(1))
+                .addActionRow(
+                        Button.primary("previous_page_1", "⬅️ Page précédente").asDisabled(),
+                        Button.primary("next_page_1", "➡️ Page suivante")
+                )
+                .setEphemeral(true)
+                .queue();
+    }
+
+    private void queue(SlashCommandInteractionEvent event, String selectedMusic) {
+        if(!isPlaying){
+            event.reply("Aucune musique n'est jouée")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+        selectedMusic += ".mp3";
+        File musicFile = new File("Music/" + selectedMusic);
+
+        playerManager.loadItem(musicFile.getAbsolutePath(), new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack audioTrack) {
+                currentTrackList.add(audioTrack);
+                event.reply("La musique **" + audioTrack.getInfo().title + "** a été rajoutée à la Playlist").queue();
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                trackLoaded(audioPlaylist.getTracks().get(0));
+            }
+
+            @Override
+            public void noMatches() {
+                event.reply("La piste n'a pas pu être trouvée ou est incompatible.")
+                        .setEphemeral(true)
+                        .queue();
+            }
+
+            @Override
+            public void loadFailed(FriendlyException e) {
+                event.reply("Erreur lors du chargement de l'audio : " + e.getMessage())
+                        .setEphemeral(true)
+                        .queue();
+            }
+        });
+    }
+
     public static List<String> listMusicFiles() {
         File musicFolder = new File("Music");
 
@@ -281,18 +344,6 @@ public class SlashCommandListener extends ListenerAdapter {
                 .filter(name -> name.endsWith(".mp3")) // Extraire les noms de fichiers
                 .map(name -> name.replace(".mp3", ""))
                 .toList();
-    }
-
-    public static void list(SlashCommandInteractionEvent event){
-        ButtonInteractionListener.currentEvent = event;
-
-        event.reply(makeList(1))
-                .addActionRow(
-                        Button.primary("previous_page_1", "⬅️ Page précédente").asDisabled(),
-                        Button.primary("next_page_1", "➡️ Page suivante")
-                )
-                .setEphemeral(true)
-                .queue();
     }
 
     public static String makeList(int currentPage) {

@@ -46,7 +46,9 @@ public class JMusicBot extends ListenerAdapter {
                 Commands.slash("loop", "Active ou désactive la répétition de la musique en cours"),
                 Commands.slash("download", "Télécharge une musique depuis un URL Youtube")
                         .addOption(STRING, "url", "URL de la vidéo Youtube", true),
-                Commands.slash("list", "Liste toutes les musiques disponibles")
+                Commands.slash("list", "Liste toutes les musiques disponibles"),
+                Commands.slash("queue", "Ajouter une musique à la playlist")
+                        .addOption(STRING, "musique", "Nom de la musique à jouer", true, true)
         );
         commands.queue();
     }
