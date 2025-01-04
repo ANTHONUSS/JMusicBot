@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44085ad3-70fd-46d4-9d2a-82540ef2f80f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/ButtonInteractionListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/JMusicBot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/LOGs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/LOGs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandAutoCompleteListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/MusicBot/Listeners/SlashCommandListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +92,7 @@
       <command value="gradle build clean" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.JMusicBot">
+  <component name="RunManager" selected="Gradle.JMusicBot [build]">
     <configuration name="JMusicBot" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="fr.MusicBot.JMusicBot" />
       <module name="JMusicBot.main" />
@@ -157,8 +153,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.JMusicBot [build clean]" />
         <item itemvalue="Gradle.JMusicBot [build]" />
+        <item itemvalue="Gradle.JMusicBot [build clean]" />
         <item itemvalue="Application.JMusicBot" />
       </list>
     </recent_temporary>
@@ -200,7 +196,8 @@
       <workItem from="1735516052753" duration="521000" />
       <workItem from="1735933306687" duration="297000" />
       <workItem from="1735933646281" duration="4648000" />
-      <workItem from="1736003777520" duration="4038000" />
+      <workItem from="1736003777520" duration="4206000" />
+      <workItem from="1736008227550" duration="12000" />
     </task>
     <servers />
   </component>
