@@ -3,10 +3,7 @@ package fr.MusicBot.Listeners;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,6 +23,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -36,6 +34,8 @@ public class SlashCommandListener extends ListenerAdapter {
     public static boolean isPlaying = false;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     public static final List<AudioTrack> currentTrackList = new ArrayList<>();
+    public static int currentTrackIndex;
+    private AudioPlayer audioPlayer;
 
     public SlashCommandListener() {
         this.playerManager = new DefaultAudioPlayerManager();
@@ -45,9 +45,9 @@ public class SlashCommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         switch (event.getName()) {
             case "play" -> {
-                String selectedMusic = event.getOption("musique", interactionOption -> interactionOption.getAsString());
+                String selectedMusic = event.getOption("musique", OptionMapping::getAsString);
 
-                boolean loopEnabled = event.getOption("loop") != null && event.getOption("loop").getAsBoolean();
+                boolean loopEnabled = event.getOption("loop") != null && Objects.requireNonNull(event.getOption("loop")).getAsBoolean();
 
                 play(event, selectedMusic, loopEnabled);
             }
@@ -58,7 +58,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 toggleLoop(event);
             }
             case "download" -> {
-                String choosedURL = event.getOption("url", interactionOption -> interactionOption.getAsString());
+                String choosedURL = event.getOption("url", OptionMapping::getAsString);
 
                 download(event, choosedURL);
             }
@@ -66,9 +66,22 @@ public class SlashCommandListener extends ListenerAdapter {
                 list(event);
             }
             case "queue" -> {
-                String selectedMusic = event.getOption("musique", interactionOption -> interactionOption.getAsString());
+                String selectedMusic = event.getOption("musique", OptionMapping::getAsString);
 
                 queue(event, selectedMusic);
+            }
+            case "list-queue" -> {
+                listQueue(event);
+            }
+            case "next" -> {
+                next(event);
+            }
+            case "previous" -> {
+                previous(event);
+            }
+            case "remove" -> {
+                String selectedMusic = event.getOption("playlist-musique", OptionMapping::getAsString);
+                remove(event, selectedMusic);
             }
         }
     }
@@ -93,7 +106,7 @@ public class SlashCommandListener extends ListenerAdapter {
         AudioSourceManagers.registerRemoteSources(playerManager);
 
         AudioManager audioManager = guild.getAudioManager();
-        AudioPlayer audioPlayer = playerManager.createPlayer();
+        audioPlayer = playerManager.createPlayer();
         currentTrackScheduler = new TrackScheduler(audioPlayer, audioManager);
 
         currentTrackScheduler.setLooping(loopEnabled);
@@ -115,13 +128,13 @@ public class SlashCommandListener extends ListenerAdapter {
                 currentTrackScheduler.setCurrentTrackIndex(0);
                 currentTrackList.add(audioTrack);
                 audioPlayer.playTrack(audioTrack);
-                isPlaying=true;
+                isPlaying = true;
                 LOGs.sendLog("Musique jouée"
                         + "\nNom : " + musicName
                         + "\nServeur : " + event.getGuild().getName()
                         + "\nSalon : #" + event.getChannel().getName()
                         + "\nUser : @" + event.getUser().getName()
-                        + "\nEn boucle : " + isLooping, 2);
+                        + "\nEn boucle : " + isLooping, LOGs.LogType.PLAY);
             }
 
             @Override
@@ -149,13 +162,14 @@ public class SlashCommandListener extends ListenerAdapter {
         AudioManager audioManager = guild.getAudioManager();
         if (audioManager.isConnected()) {
             audioManager.closeAudioConnection();
+            currentTrackList.clear();
             isPlaying = false;
             event.reply("Musique arrêtée.").queue();
             LOGs.sendLog("Musique arrêtée"
                             + "\nServeur : " + event.getGuild().getName()
                             + "\nSalon : #" + event.getChannel().getName()
                             + "\nUser : " + event.getUser().getName(),
-                    3);
+                    LOGs.LogType.STOP);
         } else {
             event.reply("Aucune musique en cours.").queue();
         }
@@ -190,7 +204,7 @@ public class SlashCommandListener extends ListenerAdapter {
                         + "\nServeur : " + event.getGuild().getName()
                         + "\nSalon : #" + event.getChannel().getName()
                         + "\nUser : @" + event.getUser().getName(),
-                4);
+                LOGs.LogType.LOOP);
     }
 
     private void download(SlashCommandInteractionEvent event, String url) {
@@ -232,7 +246,7 @@ public class SlashCommandListener extends ListenerAdapter {
             event.getHook().sendMessage("Téléchargement de **" + musicName + "** en cours...")
                     .setEphemeral(true)
                     .queue();
-            LOGs.sendLog("Musique " + musicName + " en cours de téléchargement par @" + event.getUser().getName(), 1);
+            LOGs.sendLog("Musique " + musicName + " en cours de téléchargement par @" + event.getUser().getName(), LOGs.LogType.DOWNLOAD);
 
 
             ProcessBuilder processBuilder = new ProcessBuilder(
@@ -252,7 +266,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 String line;
 
                 while ((line = reader.readLine()) != null) {
-                    LOGs.sendLog(line, 1);
+                    LOGs.sendLog(line, LOGs.LogType.DOWNLOAD);
                 }
 
                 while ((line = errorReader.readLine()) != null) {
@@ -267,7 +281,7 @@ public class SlashCommandListener extends ListenerAdapter {
                             .queue();
                     LOGs.sendLog("Musique téléchargée"
                             + "\nNom : " + musicName
-                            + "\nUser : " + event.getUser().getName(), 1);
+                            + "\nUser : " + event.getUser().getName(), LOGs.LogType.DOWNLOAD);
                 } else {
                     event.getHook().editOriginal("Une erreur est survenue lors du téléchargement")
                             .queue();
@@ -281,7 +295,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
     }
 
-    private static void list(SlashCommandInteractionEvent event){
+    private static void list(SlashCommandInteractionEvent event) {
         ButtonInteractionListener.currentEvent = event;
 
         event.reply(makeList(1))
@@ -294,7 +308,7 @@ public class SlashCommandListener extends ListenerAdapter {
     }
 
     private void queue(SlashCommandInteractionEvent event, String selectedMusic) {
-        if(!isPlaying){
+        if (!isPlaying) {
             event.reply("Aucune musique n'est jouée")
                     .setEphemeral(true)
                     .queue();
@@ -307,7 +321,7 @@ public class SlashCommandListener extends ListenerAdapter {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
                 currentTrackList.add(audioTrack);
-                event.reply("La musique **" + audioTrack.getInfo().title + "** a été rajoutée à la Playlist").queue();
+                event.reply("La musique **" + getFileName(audioTrack.getInfo().uri) + "** a été rajoutée à la Playlist").queue();
             }
 
             @Override
@@ -331,6 +345,101 @@ public class SlashCommandListener extends ListenerAdapter {
         });
     }
 
+    private void listQueue(SlashCommandInteractionEvent event) {
+        if (currentTrackList.isEmpty()) {
+            event.reply("La playlist est vide")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        List<String> playlist = currentTrackList.stream()
+                .map(track -> getFileName(track.getInfo().uri))
+                .toList();
+
+        StringBuilder builder = new StringBuilder("Musiques de la playlist actuelle :\n");
+        for (int i = 0; i < playlist.size(); i++)
+            builder.append("- **").append(playlist.get(i)).append("**\n");
+
+        event.reply(builder.toString())
+                .setEphemeral(true)
+                .queue();
+    }
+
+    private void next(SlashCommandInteractionEvent event) {
+        if (currentTrackList.isEmpty()) {
+            event.reply("La playlist est vide")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        if (currentTrackList.size() == 1) {
+            event.reply("La playlist ne contient qu'un élément, utilisez /play à la place.")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        if (currentTrackIndex == currentTrackList.size() - 1 && !isLooping) {
+            event.reply("Il n'y a pas de musique suivante")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        } else if (currentTrackIndex == currentTrackList.size() - 1 && isLooping) currentTrackIndex = 0;
+        else currentTrackIndex++;
+
+        event.reply("Prochaine musique dans la playlist jouée.").queue();
+
+        audioPlayer.playTrack(currentTrackList.get(currentTrackIndex));
+    }
+
+    private void previous(SlashCommandInteractionEvent event) {
+        if (currentTrackList.isEmpty()) {
+            event.reply("La playlist est vide")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        if (currentTrackList.size() == 1) {
+            event.reply("La playlist ne contient qu'un élément, utilisez /play à la place.")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
+
+        if (currentTrackIndex == 0 && !isLooping) {
+            event.reply("Il n'y a pas de musique précédente")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        } else if (currentTrackIndex == 0 && isLooping) currentTrackIndex = currentTrackList.size() - 1;
+        else currentTrackIndex--;
+
+        event.reply("Musique précédente dans la playlist jouée.").queue();
+        audioPlayer.playTrack(currentTrackList.get(currentTrackIndex));
+    }
+
+    private void remove(SlashCommandInteractionEvent event, String selectedMusic) {
+        for (AudioTrack track : currentTrackList) {
+            if (getFileName(track.getInfo().uri).equals(selectedMusic)) {
+                currentTrackList.remove(track);
+                currentTrackIndex--;
+                break;
+            }
+        }
+
+        event.reply("La musique **" + selectedMusic + "** à été retirée").queue();
+    }
+
+    public static String getFileName(String uri) {
+        File file = new File(uri);
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf(".");
+        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+    }
+
     public static List<String> listMusicFiles() {
         File musicFolder = new File("Music");
 
@@ -350,8 +459,8 @@ public class SlashCommandListener extends ListenerAdapter {
         List<String> musicList = listMusicFiles();
         int totalPages = (int) Math.ceil((double) musicList.size() / 10);
 
-        if (currentPage < 1) currentPage=1;
-        if (currentPage > totalPages) currentPage=totalPages;
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
 
         List<String> pageContent = musicList.stream()
                 .skip((currentPage - 1) * 10L)

@@ -48,7 +48,12 @@ public class JMusicBot extends ListenerAdapter {
                         .addOption(STRING, "url", "URL de la vidéo Youtube", true),
                 Commands.slash("list", "Liste toutes les musiques disponibles"),
                 Commands.slash("queue", "Ajouter une musique à la playlist")
-                        .addOption(STRING, "musique", "Nom de la musique à jouer", true, true)
+                        .addOption(STRING, "musique", "Nom de la musique à jouer", true, true),
+                Commands.slash("list-queue", "Liste le contenu de la playlist actuelle"),
+                Commands.slash("next", "Joue la prochaine musique dans la playlist"),
+                Commands.slash("previous", "Rejoue la musique précédente dans la playlist"),
+                Commands.slash("remove", "Supprime une musique de la playlist")
+                        .addOption(STRING, "playlist-musique", "Nom de la musique à enlever", true, true)
         );
         commands.queue();
     }

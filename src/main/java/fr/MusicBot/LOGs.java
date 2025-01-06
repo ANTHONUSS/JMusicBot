@@ -10,35 +10,39 @@ public class LOGs {
     public static final String BLUE = "\u001B[34m";     //"feur" reply
     public static final String PINK = "\033[38;5;213m"; //debug reply
 
-    public static void sendLog(String message, int logType) {
+    public enum LogType {
+        ERROR, DOWNLOAD, PLAY, STOP, LOOP, FEUR, DEBUG
+    }
+
+    public static void sendLog(String message, LogType logType) {
         String color;
         String enterMessage;
         switch (logType) {
-            case 0 -> {
+            case ERROR -> {
                 color = RED;
                 enterMessage = "ERROR ==> ";
             }
-            case 1 -> {
+            case DOWNLOAD -> {
                 color = YELLOW;
                 enterMessage = "DOWNLOAD ==> ";
             }
-            case 2 -> {
+            case PLAY -> {
                 color = GREEN;
                 enterMessage = "PLAY ==> ";
             }
-            case 3 -> {
+            case STOP -> {
                 color = PURPLE;
                 enterMessage = "STOP ==> ";
             }
-            case 4 -> {
+            case LOOP -> {
                 color = CYAN;
                 enterMessage = "LOOP ==> ";
             }
-            case 5 -> {
+            case FEUR -> {
                 color = BLUE;
                 enterMessage = "FEUR ==> ";
             }
-            case 6 -> {
+            case DEBUG -> {
                 color = PINK;
                 enterMessage = "DEBUG ==> ";
             }

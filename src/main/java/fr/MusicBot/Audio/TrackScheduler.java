@@ -15,7 +15,6 @@ public class TrackScheduler extends AudioEventAdapter {
     private boolean isLooping;
     private String currentTrackName;
     private SlashCommandInteractionEvent currentEvent;
-    private int currentTrackIndex;
 
     public TrackScheduler(AudioPlayer audioPlayer, AudioManager audioManager) {
         this.audioPlayer = audioPlayer;
@@ -39,33 +38,33 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void setCurrentTrackIndex(int currentTrackIndex) {
-        this.currentTrackIndex = currentTrackIndex;
+        SlashCommandListener.currentTrackIndex = currentTrackIndex;
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason == AudioTrackEndReason.FINISHED) {
-            if (currentTrackIndex + 1 < SlashCommandListener.currentTrackList.size()) {
+            if (SlashCommandListener.currentTrackIndex + 1 < SlashCommandListener.currentTrackList.size()) {
                 LOGs.sendLog("Prochaine musique lue"
                         + "\nNom : " + currentTrackName
                         + "\nServeur : " + currentEvent.getGuild().getName()
-                        + "\nSalon : #" + currentEvent.getChannel().getName(), 4);
+                        + "\nSalon : #" + currentEvent.getChannel().getName(), LOGs.LogType.PLAY);
 
-                currentTrackIndex++;
-                audioPlayer.playTrack(SlashCommandListener.currentTrackList.get(currentTrackIndex));
+                SlashCommandListener.currentTrackIndex++;
+                audioPlayer.playTrack(SlashCommandListener.currentTrackList.get(SlashCommandListener.currentTrackIndex));
             } else {
                 if (isLooping) {
                     LOGs.sendLog("Playlist lue en boucle"
                             + "\nNom : " + currentTrackName
                             + "\nServeur : " + currentEvent.getGuild().getName()
-                            + "\nSalon : #" + currentEvent.getChannel().getName(), 4);
+                            + "\nSalon : #" + currentEvent.getChannel().getName(), LOGs.LogType.LOOP);
 
                     if (SlashCommandListener.currentTrackList.size() == 1) {
-                        currentTrackIndex = 0;
+                        SlashCommandListener.currentTrackIndex = 0;
                         audioPlayer.playTrack(track.makeClone());
                     } else {
-                        currentTrackIndex = 0;
-                        audioPlayer.playTrack(SlashCommandListener.currentTrackList.get(currentTrackIndex));
+                        SlashCommandListener.currentTrackIndex = 0;
+                        audioPlayer.playTrack(SlashCommandListener.currentTrackList.get(SlashCommandListener.currentTrackIndex));
                     }
                 } else {
                     if (audioManager.isConnected()) {

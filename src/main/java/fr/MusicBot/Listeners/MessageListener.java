@@ -18,7 +18,7 @@ public class MessageListener extends ListenerAdapter {
                     + "\nUser : @" + event.getAuthor().getName()
                     + "\nServeur : " + event.getGuild().getName()
                     + "\nSalon : #" + event.getChannel().getName(),
-                    5);
+                    LOGs.LogType.FEUR);
         }
     }
 }
